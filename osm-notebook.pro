@@ -60,3 +60,9 @@ QMAKE_LFLAGS += -pie -rdynamic
 HEADERS += \
     locator.h
 
+
+contains(MEEGO_EDITION,harmattan) {
+    icon.files = osm-notebook.png
+    icon.path = /usr/share/icons/hicolor/80x80/apps
+    INSTALLS += icon
+}
