@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>qml/MainPage.qml</file>
+        <file>qml/storage.js</file>
+        <file>qml/MultiMap.qml</file>
+        <file>qml/TrackList.qml</file>
+    </qresource>
+</RCC>
