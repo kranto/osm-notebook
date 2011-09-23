@@ -10,14 +10,13 @@ Page {
         if (status == PageStatus.Activating)
             listView.updateList();
 	if (status == PageStatus.Deactivating) {
-	    var loaded = new Array();
+            var selected = new Array();
 	    for (var i = 0; i < listView.model.length; i++) {
-		if (listView.model[i].loaded) {
-		    loaded.push(listView.model[i].id)
+                if (listView.model[i].selected) {
+                    selected.push(listView.model[i].id)
 		}
 	    }
-
-    	    mainPage.loadTracks(loaded);
+            mainPage.showTracks(selected);
 	}
     }
 
@@ -36,22 +35,13 @@ Page {
 	anchors.horizontalCenter: parent.horizontalCenter
 
         function updateList() {
-	    var loaded = mainPage.loadedTracks;
-	    var allTracks = Storage.getTracks();
-	    for (var i = 0; i < allTracks.length; i++) {
-		allTracks[i].loaded = false;
-		for (var j = 0; j < loaded.length; j++) {
-		    if (loaded[j] == allTracks[i].id)
-			allTracks[i].loaded = true;
-		}
-	    }
-	    listView.model = allTracks;
+            model = mainPage.trackPolylines;
         }
 
         delegate: Rectangle {
 	    height: 80
             width: parent.width
-	    color: listView.model[index].loaded? "lightblue": "white";
+            color: listView.model[index].selected? "lightblue": "white";
 
             Label {
                 text: listView.model[index].id
@@ -61,7 +51,7 @@ Page {
                 anchors.fill: parent
 		onClicked: {
 		    var newModel = listView.model;
-		    newModel[index].loaded = !newModel[index].loaded;
+                    newModel[index].selected = !newModel[index].selected;
 		    listView.model = newModel;
 		}
             }

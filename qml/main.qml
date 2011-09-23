@@ -65,24 +65,8 @@ PageStackWindow {
         MenuLayout {
             MenuItem { text: "GPS on/off";  }
             MenuItem { text: "Tracker on/off" }
-            MenuItem { text: "Import Tracks"; onClicked: {
+            MenuItem { text: "Select GPS Tracks"; onClicked: {
                     appWindow.pushPage("TrackList");
-
-                    /*
-                    var tracks = Storage.getTracks();
-                    map.activeMap.removeMapObject(trackPolyline);
-                    for (var t = 0; t < tracks.length; t++) {
-                        var track = Storage.getTrackPoints(tracks[t].id);
-                        for (var i = 0; i < track.length; i++) {
-                            var c = coordinateComponent.createObject(mainPage);
-                            c.latitude = track[i].lat;
-                            c.longitude = track[i].lon;
-                            c.altitude = (typeof track[i].ele == "string")? -1: track[i].ele;
-                            trackPolyline.addCoordinate(c);
-                        }
-                    }
-                    map.activeMap.addMapObject(trackPolyline);
-                    */
                 }
             }
             MenuItem { text: "Export Tracks";

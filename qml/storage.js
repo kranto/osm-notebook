@@ -14,6 +14,7 @@ function initialize() {
             tx.executeSql('CREATE TABLE IF NOT EXISTS state(key TEXT UNIQUE, value TEXT)');
             tx.executeSql('CREATE TABLE IF NOT EXISTS tracks(id INTEGER UNIQUE, date INTEGER, name TEXT, description TEXT, duration INTEGER, length INTEGER)');
             tx.executeSql('CREATE TABLE IF NOT EXISTS trackpoints(trackid INTEGER, lat FLOAT, lon FLOAT, ele FLOAT, time INTEGER)');
+            tx.executeSql('UPDATE tracks SET duration=0, length=0 WHERE duration<0')
           });
     return db;
 }
@@ -144,7 +145,7 @@ function newTrack() {
 //    console.log("trackId: " + trackId);
     db.transaction(function(tx) {
                var rs = tx.executeSql('INSERT INTO tracks VALUES (?,?,?,?,?,?);',
-                                      [trackId, new Date().getTime(), "", "", 0, 0]);
+                                      [trackId, new Date().getTime(), "", "", -1, -1]);
                if (rs.rowsAffected <= 0) {
                    trackId = -1;
                }
@@ -157,7 +158,7 @@ function getTracks() {
     var db = getDatabase();
     var tracks = new Array();
     db.transaction(function(tx) {
-                       var rs = tx.executeSql('SELECT * FROM tracks ORDER BY date ASC;');
+                       var rs = tx.executeSql('SELECT * FROM tracks WHERE duration >= 0 ORDER BY date ASC;');
                        tracks = new Array(rs.rows.length);
                        for (var i = 0; i < rs.rows.length; i++) {
                            var item = rs.rows.item(i);

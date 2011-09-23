@@ -8,11 +8,56 @@ Page {
     id: mainPage
     anchors.fill:  parent
 
-    property variant loadedTracks: [ ]
+    property variant trackPolylines: []
 
-    function loadTracks(trackIds) {
-	console.log("load tracks: " + trackIds.length);
-	loadedTracks = trackIds;
+    function showTracks(trackIds) {
+        var polylines = trackPolylines;
+
+        for (var i=0; i < polylines.length; i++)  {
+            polylines[i].selected = false;
+            for (var j = 0; j < trackIds.length; j++) {
+                if (trackIds[j] == polylines[i].id)
+                    polylines[i].selected = true;
+            }
+            if (polylines[i].selected) {
+                if (polylines[i].polyline == undefined) {
+                    polylines[i].polyline = loadTrackPolyline(polylines[i].id);
+                }
+                map.activeMap.addMapObject(polylines[i].polyline);
+            } else {
+                if (polylines[i].polyline != undefined)
+                    map.activeMap.removeMapObject(polylines[i].polyline);
+            }
+        }
+        trackPolylines = polylines;
+    }
+
+    Component.onCompleted: {
+        var polylines = new Array();
+        var tracks = Storage.getTracks();
+        for (var i = 0; i < tracks.length; i++) {
+            //var o = new Object();
+            var o = tracks[i];
+            o.selected = false;
+            polylines.push(o);
+        }
+        trackPolylines = polylines;
+    }
+
+    Component { id: polylineComponent; MapPolyline { border.width: 3; border.color: "magenta"; } }
+
+    function loadTrackPolyline(trackId) {
+        console.log("load " + trackId);
+        var polyline = polylineComponent.createObject(mainPage);
+        var track = Storage.getTrackPoints(trackId);
+        for (var i = 0; i < track.length; i++) {
+            var c = coordinateComponent.createObject(mainPage);
+            c.latitude = track[i].lat;
+            c.longitude = track[i].lon;
+            c.altitude = (typeof track[i].ele == "string")? -1: track[i].ele;
+            polyline.addCoordinate(c);
+        }
+        return polyline;
     }
 
     Loader { sourceComponent: actionMenuIconComponent; z: 10; anchors.bottom: parent.bottom; anchors.right: parent.right; }
