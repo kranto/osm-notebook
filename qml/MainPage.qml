@@ -8,11 +8,11 @@ Page {
     id: mainPage
     anchors.fill:  parent
 
-    Component.onCompleted: {
-        var tracks = Storage.getTracks();
-        for (var i = 0; i < tracks.length; i++) {
-            console.log(tracks[i].id + " " + tracks[i].name)
-        }
+    property variant loadedTracks: [ ]
+
+    function loadTracks(trackIds) {
+	console.log("load tracks: " + trackIds.length);
+	loadedTracks = trackIds;
     }
 
     Loader { sourceComponent: actionMenuIconComponent; z: 10; anchors.bottom: parent.bottom; anchors.right: parent.right; }
@@ -28,7 +28,6 @@ Page {
     function jumpTo(coord) {
         moveToAnimation.stop();
         map.targetCoordinate = coord;
-//        jumpToAnimation.mapCenter = coord;
         jumpToAnimation.restart();
     }
 
@@ -175,16 +174,13 @@ Page {
             anchors.fill: parent
             property real originalZoomLevel
             onPinchStarted: {
-//                console.log("pinch started " + pinch.scale + " " + panMouseArea.pressed);
                 originalZoomLevel = zoomSlider.value;
             }
             onPinchUpdated: {
                 var newZoomLevel = originalZoomLevel + Math.log(pinch.scale)/Math.LN2;
-//                console.log("pinch updated " + newZoomLevel);
                 zoomSlider.value = newZoomLevel;
             }
             onPinchFinished: {
-//                console.log("pinch finished " + pinch.scale);
             }
         }
 
@@ -198,16 +194,14 @@ Page {
                 x0 = mouse.x
                 y0 = mouse.y
                 firstChange = true
-//                console.log("mouse pressed: " + x0 + " " + y0);
             }
             onPositionChanged:  {
                 if (!pressed)
                     return;
                 var dx = mouse.x - x0;
                 var dy = mouse.y - y0;
-//                console.log("dx " + dx + ", dy " + dy + ", fc " + firstChange);
 
-                if (firstChange && Math.abs(dx) + Math.abs(dy) > 200) // more than N pixels as first touch -> interpret as multitouch
+		if (firstChange && Math.abs(dx) + Math.abs(dy) > 300) // more than N pixels as first touch -> interpret as multitouch
                     return;
                 firstChange = false;
                 if (map.lockedToLocation) {
@@ -219,7 +213,6 @@ Page {
                 x0 = mouse.x
                 y0 = mouse.y
                 map.latestCoordinate = map.toCoordinate(Qt.point(map.width/2-dx, map.height/2-dy));
-//                console.log("panning " + dx + " " + dy);
             }
             onReleased: {
                 map.storeCenter();
@@ -228,11 +221,9 @@ Page {
             onDoubleClicked: {
                 var newCenter = map.toCoordinate(Qt.point(mouse.x, mouse.y));
                 zoomSlider.value += 1;
-//                map.setCenter(newCenter);
                 map.latestCoordinate = newCenter;
                 map.lockToLocation(false);
                 map.storeCenter();
-//                jumpTo(newCenter);
             }
         }
     }
@@ -251,7 +242,6 @@ Page {
             selectedIndex = 0;
         }
     }
-
 
     // last one to be on top
     Slider {
