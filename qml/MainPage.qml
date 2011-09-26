@@ -32,12 +32,16 @@ Page {
         trackPolylines = polylines;
     }
 
-    Component.onCompleted: {
+    function loadTracks() {
         var polylines = new Array();
         var tracks = Storage.getTracks();
-        for (var i = 0; i < tracks.length; i++) {
+        for (var i in tracks) {
             var o = tracks[i];
             o.selected = false;
+            for (var j in trackPolylines) {
+                if (trackPolylines[j].id == tracks[i].id)
+                    o = trackPolylines[j];
+            }
             polylines.push(o);
         }
         trackPolylines = polylines;
@@ -74,16 +78,25 @@ Page {
          onClicked: (actionMenu.status == DialogStatus.Closed) ? actionMenu.open() : actionMenu.close()
     }
 
+    Component { id: settingsPageComponent; SettingsPage { } }
+
     Menu {
         id: actionMenu
         visualParent: pageStack
         MenuLayout {
+            MenuItem { text: "Settings" ; onClicked: { pageStack.push(settingsPageComponent); } }
             MenuItem { text: "GPS on/off";  }
-            MenuItem { text: "Tracker on/off" }
+
+            MenuItem { text: "Start Tracker"; visible: tracker.state == ""; onClicked: { tracker.start(); } }
+            MenuItem { text: "Pause Tracker"; visible: tracker.state == "running"; onClicked: { tracker.pause(); } }
+            MenuItem { text: "Resume Tracker"; visible: tracker.state == "paused"; onClicked: { tracker.resume(); } }
+            MenuItem { text: "Stop Tracker"; visible: tracker.state == "running" || tracker.state == "paused"; onClicked: { tracker.finish(); } }
+
             MenuItem { text: "Select GPS Tracks"; onClicked: {
                     trackSelectionDialog.open();
                 }
             }
+
             MenuItem { text: "Export Tracks";
                 onClicked: {
                     var tracks = Storage.getTracks();
@@ -114,26 +127,14 @@ Page {
         updateInterval: 1000
         active: gpsToggleButton.checked
         // nmeaSource: "nmealog.txt"
-        property int skipFirst: 3
-        property int prevSpeed: 0
         onPositionChanged: {
             if (position != undefined && position.latitudeValid && position.longitudeValid) {
                 moveTo(position);
-                if (skipFirst > 0)
-                    skipFirst--;
-                if (!trackerToggleButton.checked)
-                    return;
-                if (skipFirst == 0 && position.speedValid && position.speed < 40)
-                    // if we move over 3.6 kmh OR this is the first point OR we have crawled over 10 metres from the last point
-                    if (position.speed > 1 || trackPolyline.path.length == 0
-                            || position.coordinate.distanceTo(trackPolyline.path[trackPolyline.path.length -1 ]) > 10 ) {
-                        if (!Storage.storeTrackPoint(position))
-                            console.log("storage failed");
-                        trackPolyline.addCoordinate(position.coordinate);
-                    }
             }
         }
     }
+
+    Tracker { id: tracker; trackPolyline: currentTrackPolyline; onTrackFinished: appWindow.refreshTracks(); }
 
     Item {
         id: pos
@@ -231,7 +232,7 @@ Page {
 
         mapObjects: [
             MapPolyline {
-                id: trackPolyline
+                id: currentTrackPolyline
                 border.color: "red"
                 border.width: 3
                 z: 0
@@ -345,7 +346,7 @@ Page {
         Label {
             text: Math.round(pos.latestPosition.horizontalAccuracy*100)/100 + " "
                   + Math.round(zoomSlider.value*100)/100 + " " + Math.round(map.activeMap.scale*100)/100
-                  + " " + map.activeMap.width + " "  + map.activeMap.height + " " + trackPolyline.path.length;
+                  + " " + map.activeMap.width + " "  + map.activeMap.height + " " + currentTrackPolyline.path.length;
         }
     }
 
@@ -397,23 +398,6 @@ Page {
         checkable: true
         checked: Storage.getState("gpsOn", true)
         opacity: 0.6
-    }
-
-    ToolButton {
-        id: trackerToggleButton
-        anchors.left: gpsToggleButton.right
-        anchors.bottom: parent.bottom
-        iconSource: ""
-        text: checked? "Tracker On": "Tracker Off"
-        enabled: gpsToggleButton.checked
-        checkable: true
-        checked: false
-        opacity: 0.6
-        onCheckedChanged: {
-            if (checked) {
-                var trackId = Storage.newTrack();
-            }
-        }
     }
 
     ParallelAnimation {

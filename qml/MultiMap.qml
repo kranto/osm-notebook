@@ -20,6 +20,8 @@ Item {
     }
 
     function toScreenPosition(c) {
+        if (activeMap == undefined)
+            return Qt.point(-1,-1);
         var p = activeMap.toScreenPosition(c);
         var x = (p.x - width/2) * activeMap.scale + width/2;
         var y = (p.y - height/2) * activeMap.scale + height/2;

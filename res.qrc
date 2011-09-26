@@ -5,5 +5,8 @@
         <file>qml/storage.js</file>
         <file>qml/MultiMap.qml</file>
         <file>qml/TrackSelectionDialog.qml</file>
+        <file>qml/SettingsPage.qml</file>
+        <file>qml/Tracker.qml</file>
+        <file>qml/TextEntryDialog.qml</file>
     </qresource>
 </RCC>

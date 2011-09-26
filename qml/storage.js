@@ -154,11 +154,23 @@ function newTrack() {
     return trackId;
 }
 
+function finalizeCurrentTrack(name) {
+    if (currentTrack == 0)
+        return;
+
+    var db = getDatabase();
+    db.transaction( function(tx) {
+                       tx.executeSql('UPDATE tracks SET name=?, duration=0, length=0 WHERE id=?', [name, currentTrack]);
+                   });
+
+    currentTrack = 0;
+}
+
 function getTracks() {
     var db = getDatabase();
     var tracks = new Array();
     db.transaction(function(tx) {
-                       var rs = tx.executeSql('SELECT * FROM tracks WHERE duration >= 0 ORDER BY date ASC;');
+                       var rs = tx.executeSql('SELECT * FROM tracks WHERE duration >= 0 ORDER BY date DESC;');
                        tracks = new Array(rs.rows.length);
                        for (var i = 0; i < rs.rows.length; i++) {
                            var item = rs.rows.item(i);

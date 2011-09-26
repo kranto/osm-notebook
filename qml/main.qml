@@ -14,5 +14,10 @@ PageStackWindow {
 
     Component.onCompleted: {
         Storage.initialize();
+        refreshTracks();
+    }
+
+    function refreshTracks() {
+        mainPage.loadTracks();
     }
 }

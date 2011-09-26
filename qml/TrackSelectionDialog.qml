@@ -12,22 +12,33 @@ MultiSelectionDialog {
 
     signal tracksSelected(variant trackIds)
 
-    onStatusChanged: {
-        // tricks needed to overcome a bug in the list model
-        // a dummy item is added and then removed
-        if (status == PageStatus.Activating) {
-            var l = trackList
-            model.clear();
-            model.append({"name": ""});
-            var selected = new Array();
-            for (var i in l) {
-                model.insert(i, {"name": "Track "+l[i].id});
-                if (l[i].selected)
-                    selected.push(i);
-            }
-            model.remove(l.length);
-        }
+    function trackName(track) {
+        var date = new Date();
+        date.setTime(track.date);
+        var name = date.toLocaleDateString();
+        name += " - ";
+        if (track.name != "")
+            name += track.name;
+        else
+            name += "<no name>";
 
+        return name;
+    }
+
+    // tricks needed to overcome a bug in the list model
+    // a dummy item is added and then removed
+    onTrackListChanged: {
+        var l = trackList
+        model.clear();
+        model.append({"name": ""});
+        var selected = new Array();
+        for (var i in l) {
+            model.insert(i, {"name": trackName(l[i])});
+            if (l[i].selected)
+                selected.push(i);
+        }
+        model.remove(l.length);
+        selectedIndexes = selected;
     }
 
     onAccepted: {

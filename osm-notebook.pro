@@ -44,7 +44,10 @@ OTHER_FILES += \
     qml/storage.js \
     qml/MultiMap.qml \
     qtc_packaging/meego.spec \
-    qml/TrackSelectionDialog.qml
+    qml/TrackSelectionDialog.qml \
+    qml/SettingsPage.qml \
+    qml/Tracker.qml \
+    qml/TextEntryDialog.qml
 
 RESOURCES += \
     res.qrc
@@ -67,6 +70,9 @@ contains(MEEGO_EDITION,harmattan) {
     icon.path = /usr/share/icons/hicolor/80x80/apps
     INSTALLS += icon
 }
+
+
+
 
 
 
