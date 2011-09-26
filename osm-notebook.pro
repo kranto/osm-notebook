@@ -43,8 +43,8 @@ OTHER_FILES += \
     qtc_packaging/debian_harmattan/changelog \
     qml/storage.js \
     qml/MultiMap.qml \
-    qml/TrackList.qml \
-    qtc_packaging/meego.spec
+    qtc_packaging/meego.spec \
+    qml/TrackSelectionDialog.qml
 
 RESOURCES += \
     res.qrc
@@ -67,4 +67,6 @@ contains(MEEGO_EDITION,harmattan) {
     icon.path = /usr/share/icons/hicolor/80x80/apps
     INSTALLS += icon
 }
+
+
 

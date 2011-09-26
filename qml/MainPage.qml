@@ -36,7 +36,6 @@ Page {
         var polylines = new Array();
         var tracks = Storage.getTracks();
         for (var i = 0; i < tracks.length; i++) {
-            //var o = new Object();
             var o = tracks[i];
             o.selected = false;
             polylines.push(o);
@@ -45,9 +44,9 @@ Page {
     }
 
     Component { id: polylineComponent; MapPolyline { border.width: 3; border.color: "magenta"; } }
+    Component { id: coordinateComponent; Coordinate { } }
 
     function loadTrackPolyline(trackId) {
-        console.log("load " + trackId);
         var polyline = polylineComponent.createObject(mainPage);
         var track = Storage.getTrackPoints(trackId);
         for (var i = 0; i < track.length; i++) {
@@ -60,7 +59,41 @@ Page {
         return polyline;
     }
 
-    Loader { sourceComponent: actionMenuIconComponent; z: 10; anchors.bottom: parent.bottom; anchors.right: parent.right; }
+    TrackSelectionDialog {
+        id: trackSelectionDialog
+        trackList: trackPolylines
+        onTracksSelected: showTracks(trackIds);
+    }
+
+    ToolIcon {
+         id: actionMenuIcon
+         z: 10;
+         anchors.bottom: parent.bottom;
+         anchors.right: parent.right;
+         platformIconId: "toolbar-view-menu";
+         onClicked: (actionMenu.status == DialogStatus.Closed) ? actionMenu.open() : actionMenu.close()
+    }
+
+    Menu {
+        id: actionMenu
+        visualParent: pageStack
+        MenuLayout {
+            MenuItem { text: "GPS on/off";  }
+            MenuItem { text: "Tracker on/off" }
+            MenuItem { text: "Select GPS Tracks"; onClicked: {
+                    trackSelectionDialog.open();
+                }
+            }
+            MenuItem { text: "Export Tracks";
+                onClicked: {
+                    var tracks = Storage.getTracks();
+                    for (var t = 0; t < tracks.length; t++) {
+                        Storage.printTrack(tracks[t]);
+                    }
+                }
+            }
+        }
+    }
 
     function moveTo(position) {
         if (jumpToAnimation.running)

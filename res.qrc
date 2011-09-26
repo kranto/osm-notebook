@@ -4,6 +4,6 @@
         <file>qml/MainPage.qml</file>
         <file>qml/storage.js</file>
         <file>qml/MultiMap.qml</file>
-        <file>qml/TrackList.qml</file>
+        <file>qml/TrackSelectionDialog.qml</file>
     </qresource>
 </RCC>
