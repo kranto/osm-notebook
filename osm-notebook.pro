@@ -47,7 +47,8 @@ OTHER_FILES += \
     qml/TrackSelectionDialog.qml \
     qml/SettingsPage.qml \
     qml/Tracker.qml \
-    qml/TextEntryDialog.qml
+    qml/TextEntryDialog.qml \
+    qml/Settings.qml
 
 RESOURCES += \
     res.qrc
@@ -70,6 +71,7 @@ contains(MEEGO_EDITION,harmattan) {
     icon.path = /usr/share/icons/hicolor/80x80/apps
     INSTALLS += icon
 }
+
 
 
 

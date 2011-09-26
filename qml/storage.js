@@ -1,6 +1,7 @@
-//sorage.js
+//storage.js
 // Originally from http://www.developer.nokia.com/Community/Wiki/How-to_create_a_persistent_settings_database_in_Qt_Quick_%28QML%29
 // First, let's create a short helper function to get the database connection
+
 function getDatabase() {
      return openDatabaseSync("osm-notebook", "1.0", "StorageDatabase", 100000);
 }
