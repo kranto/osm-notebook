@@ -1,13 +1,18 @@
-//storage.js
+.pragma library
+
 // Originally from http://www.developer.nokia.com/Community/Wiki/How-to_create_a_persistent_settings_database_in_Qt_Quick_%28QML%29
-// First, let's create a short helper function to get the database connection
+
+initialize();
+var currentTrack = 0;
+
 
 function getDatabase() {
-     return openDatabaseSync("osm-notebook", "1.0", "StorageDatabase", 100000);
+    return openDatabaseSync("osm-notebook", "1.0", "StorageDatabase", 100000);
 }
 
 // At the start of the application, we can initialize the tables we need if they haven't been created yet
 function initialize() {
+    console.log("initialize db");
     var db = getDatabase();
     db.transaction(
         function(tx) {
@@ -24,6 +29,7 @@ function initialize() {
 function setSetting(setting, value) {
    // setting: string representing the setting name (eg: “username”)
    // value: string representing the value of the setting (eg: “myUsername”)
+    console.log("set setting " + setting + ": " + value);
    var db = getDatabase();
    var res = "";
    db.transaction(function(tx) {
@@ -52,10 +58,12 @@ function getSetting(setting, defaultValue) {
             res = defaultValue;
         }
     })
+    console.log("getSetting: " + setting + " " + defaultValue + " " + res);
     return res;
 }
 
 function setState(key, value) {
+    console.log("set state " + key + ": " + value);
    var db = getDatabase();
    var res = false;
    db.transaction(function(tx) {
@@ -137,8 +145,6 @@ function getTrackPoints(trackId) {
                    });
     return track;
 }
-
-var currentTrack = 0;
 
 function newTrack() {
     var db = getDatabase();

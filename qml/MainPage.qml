@@ -8,6 +8,10 @@ Page {
     id: mainPage
     anchors.fill:  parent
 
+    orientationLock: settings != undefined? settings.orientationLock: PageOrientation.Automatic
+
+    signal settingsRequested
+
     property variant trackPolylines: []
 
     function showTracks(trackIds) {
@@ -78,24 +82,20 @@ Page {
          onClicked: (actionMenu.status == DialogStatus.Closed) ? actionMenu.open() : actionMenu.close()
     }
 
-    Component { id: settingsPageComponent; SettingsPage { } }
-
     Menu {
         id: actionMenu
         visualParent: pageStack
         MenuLayout {
-            MenuItem { text: "Settings" ; onClicked: { pageStack.push(settingsPageComponent); } }
-            MenuItem { text: "GPS on/off";  }
+            MenuItem { text: "Settings" ; onClicked: { settingsRequested(); } }
+            MenuItem { text: "GPS on"; visible: tracker.state == "" && !tracker.gpsOn; onClicked: { tracker.gpsOn = true; } }
+            MenuItem { text: "GPS off"; visible: tracker.state == "" && tracker.gpsOn; onClicked: { tracker.gpsOn = false; } }
 
             MenuItem { text: "Start Tracker"; visible: tracker.state == ""; onClicked: { tracker.start(); } }
             MenuItem { text: "Pause Tracker"; visible: tracker.state == "running"; onClicked: { tracker.pause(); } }
             MenuItem { text: "Resume Tracker"; visible: tracker.state == "paused"; onClicked: { tracker.resume(); } }
             MenuItem { text: "Stop Tracker"; visible: tracker.state == "running" || tracker.state == "paused"; onClicked: { tracker.finish(); } }
 
-            MenuItem { text: "Select GPS Tracks"; onClicked: {
-                    trackSelectionDialog.open();
-                }
-            }
+            MenuItem { text: "Select GPS Tracks"; onClicked: { trackSelectionDialog.open(); } }
 
             MenuItem { text: "Export Tracks";
                 onClicked: {
@@ -122,24 +122,23 @@ Page {
         jumpToAnimation.restart();
     }
 
-    PositionSource {
-        id: positionSource
-        updateInterval: 1000
-        active: gpsToggleButton.checked
-        // nmeaSource: "nmealog.txt"
-        onPositionChanged: {
-            if (position != undefined && position.latitudeValid && position.longitudeValid) {
-                moveTo(position);
+    Tracker {
+        id: tracker
+        onTrackFinished: appWindow.refreshTracks()
+        onLatestPositionChanged: {
+            if (latestPosition != undefined && latestPosition.latitudeValid && latestPosition.longitudeValid) {
+                moveTo(latestPosition);
             }
         }
+        onNewTrackPosition: {
+            currentTrackPolyline.addCoordinate(position.coordinate);
+        }
     }
-
-    Tracker { id: tracker; trackPolyline: currentTrackPolyline; onTrackFinished: appWindow.refreshTracks(); }
 
     Item {
         id: pos
 
-        property Position latestPosition: positionSource.position
+        property Position latestPosition: tracker.latestPosition
         property Coordinate latestCoordinate: latestPosition.coordinate
         property bool isLatestOnMap: true
 
@@ -385,18 +384,6 @@ Page {
         anchors.fill: lockButton
         onClicked: { map.setCenter(latestCenter); }
         visible: !lockButton.visible && latestCenter != undefined && latestCenterSet
-        opacity: 0.6
-    }
-
-    ToolButton {
-        id: gpsToggleButton
-        anchors.left: parent.left
-        anchors.bottom: parent.bottom
-        iconSource: ""
-        text: checked? "GPS On": "GPS Off"
-        onCheckedChanged: Storage.setState("gpsOn", checked);
-        checkable: true
-        checked: Storage.getState("gpsOn", true)
         opacity: 0.6
     }
 

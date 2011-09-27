@@ -7,34 +7,52 @@ Item {
     id: tracker
 
     signal trackFinished
+    signal newTrackPosition(variant position)
 
-    property MapPolyline trackPolyline: MapPolyline { }
+    property bool gpsOn: false
+    property alias latestPosition: positionSource.position;
+
+    Component.onCompleted: {
+        gpsOn = settings == undefined? false:
+                settings.gpsOnInStartup == 2? Storage.getState("gpsOn", true):
+                settings.gpsOnInStartup == 1;
+    }
 
     PositionSource {
         id: positionSource
         updateInterval: 1000
-        active: tracker.state == "running"
-        // nmeaSource: "nmealog.txt"
+        active: tracker.state != ""  || gpsOn
         property int skipFirst: 3
         property int prevSpeed: 0
+        property variant prevCoordinate
+
         onPositionChanged: {
-            if (position != undefined && position.latitudeValid && position.longitudeValid) {
-                if (skipFirst > 0)
-                    skipFirst--;
-                if (skipFirst == 0 && position.speedValid && position.speed < 40)
-                    // if we move over 3.6 kmh OR this is the first point OR we have crawled over 10 metres from the last point
-                    if (position.speed > 1 || trackPolyline.path.length == 0
-                            || position.coordinate.distanceTo(trackPolyline.path[trackPolyline.path.length -1 ]) > 10 ) {
-                        if (!Storage.storeTrackPoint(position))
-                            console.log("storage failed");
-                        trackPolyline.addCoordinate(position.coordinate);
-                    }
+            if (tracker.state == "running") {
+                if (position != undefined && position.latitudeValid && position.longitudeValid) {
+                    if (skipFirst > 0)
+                        skipFirst--;
+                    if (skipFirst == 0 && position.speedValid && position.speed < 40)
+                        // if we move over 3.6 kmh OR this is the first point OR we have crawled over 10 metres from the last point
+                        if (position.speed > 1
+                                || prevCoordinate == undefined
+                                || position.coordinate.distanceTo(prevCoordinate) > 10 ) {
+                            if (!Storage.storeTrackPoint(position))
+                                console.log("storage failed");
+                            tracker.newTrackPosition(position);
+                            prevCoordinate = position.coordinate
+                        }
+                }
             }
         }
     }
 
+    onGpsOnChanged: {
+        Storage.setState("gpsOn", gpsOn);
+    }
+
     function start()  {
         Storage.newTrack();
+        positionSource.prevCoordinate = undefined
         state = "running";
     }
 

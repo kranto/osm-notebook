@@ -6,32 +6,18 @@ import "storage.js" as Storage
 PageStackWindow {
     id: appWindow
 
+    initialPage: mainPage
     showStatusBar: false
 
-    initialPage: mainPage
-
-    MainPage { id: mainPage }
-
-    Binding {
-    }
-
-    Component { id: settingsComponent;
-        Settings {
-            onOrientationLockChanged: {
-                screen.allowedOrientations =
-                        (orientationLock == PageOrientation.Automatic)? (Screen.Portrait | Screen.Landscape):
-                        (orientationLock == PageOrientation.LockPortrait)? Screen.Portrait: Screen.Landscape;
-            }
-        }
-    }
-
-    property Settings settings
-
     Component.onCompleted: {
-        Storage.initialize();
-        settings = settingsComponent.createObject(appWindow);
         refreshTracks();
     }
+
+    property Settings settings: Settings { }
+//    Component { id: settingsComponent; Settings { } }
+    Component { id: settingsPageComponent; SettingsPage { } }
+
+    MainPage { id: mainPage; onSettingsRequested: { pageStack.push(settingsPageComponent); } }
 
     function refreshTracks() {
         mainPage.loadTracks();
