@@ -12,4 +12,7 @@ QtObject {
 
     property real zoomFactor: Storage.getSetting("zoomFactor", 1)
     onZoomFactorChanged: Storage.setSetting("zoomFactor", zoomFactor);
+
+    property bool showDebug: Storage.getSetting("showDebug", false)
+    onShowDebugChanged: Storage.setSetting("showDebug", showDebug);
 }

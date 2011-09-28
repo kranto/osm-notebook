@@ -246,7 +246,7 @@ Page {
             }
         ]
 
-        activeMap: maps[mouseArea.selectedIndex]
+        activeMap: maps[mapSwitcher.selectedIndex]
 
         PinchArea {
             anchors.fill: parent
@@ -306,22 +306,42 @@ Page {
         }
     }
 
-    MouseArea {
-        id: mouseArea
-        anchors.top: map.top
-        x: map.x
-        width: map.width
-        height:  50
+    Item {
+        id: mapSwitcher
+        anchors.right: map.right
+        anchors.bottom: actionMenuIcon.top
+        anchors.bottomMargin: 20
+        width: 80
+        height: switcherColumn.height
+
         property int selectedIndex: 0
-        onPressed:  {
-            selectedIndex = 1 + Math.floor(mouse.x*(map.maps.length-1)/width);
-        }
-        onReleased: {
-            selectedIndex = 0;
+
+        Column {
+            id: switcherColumn
+            spacing: 5
+
+            Repeater {
+                model: map.maps.length - 1
+                Rectangle {
+                    width: mapSwitcher.width
+                    height: 80
+                    radius: 4
+                    border.color: "gray"
+                    border.width: 1
+                    color: "gray"
+                    opacity: switcherMouseArea.pressed? 0.8: 0.2
+                    MouseArea {
+                        id: switcherMouseArea
+                        anchors.fill: parent
+                        onPressed: mapSwitcher.selectedIndex = index + 1;
+                        onReleased: mapSwitcher.selectedIndex = 0;
+                    }
+                }
+            }
         }
     }
 
-    // last one to be on top
+
     Slider {
         id: zoomSlider
         anchors.bottom: parent.bottom
@@ -334,7 +354,7 @@ Page {
     }
 
     Column {
-        id: labelColumn
+        id: debugValueColumn
         width: parent.width
         Label {
             text: pos.latestCoordinate.latitude + " " + pos.latestCoordinate.longitude + " " + pos.latestPosition.speed
@@ -347,6 +367,7 @@ Page {
                   + Math.round(zoomSlider.value*100)/100 + " " + Math.round(map.activeMap.scale*100)/100
                   + " " + map.activeMap.width + " "  + map.activeMap.height + " " + currentTrackPolyline.path.length;
         }
+        visible: settings.showDebug
     }
 
     Button {
@@ -354,7 +375,8 @@ Page {
         text: pos.isLatestOnMap? "Follow Track": "Where am I"
         font.pixelSize: 20
         width: 150
-        anchors.top: mouseArea.bottom
+        anchors.top: parent.top
+        anchors.topMargin: 20
         anchors.right:  parent.right
         onClicked: {
             if (map.center.distanceTo(pos.latestCoordinate) >

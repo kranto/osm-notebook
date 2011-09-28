@@ -15,26 +15,23 @@ Page {
         }
     }
 
-
     Flickable {
         anchors.fill: parent
         contentWidth: width;
         contentHeight: settingsColumn.height
 
-        Label {
+        Column {
+            id: settingsColumn
             anchors.top: parent.top
             anchors.topMargin: 10
-            id: titleLabel; text: "Settings"; font.pixelSize: 32; font.bold: true;
-        }
-
-        Column {
-            anchors.top: titleLabel.bottom
-            anchors.topMargin: 30
             width: parent.width
-
-            id: settingsColumn
             spacing: 30
-            Column {
+
+            Label {
+                id: titleLabel; text: "Settings"; font.pixelSize: 32; font.bold: true;
+            }
+
+            Column {                
                 spacing: 5
                 Label { text: "Orientation Lock"; font.pixelSize: 28; }
                 ButtonRow {
@@ -44,6 +41,7 @@ Page {
                     Button { id: b13; text: "Landscape"; onClicked: settings.orientationLock = PageOrientation.LockLandscape; }
                 }
             }
+
             Column {
                 spacing: 5
                 Label { text: "GPS on in Startup"; font.pixelSize: 28; }
@@ -71,6 +69,17 @@ Page {
                     onPressedChanged: if (!pressed) settings.zoomFactor = Math.round(value*100)/100;
                 }
             }
+            Column {
+                spacing: 5
+                Label { text: "Show Debug Values"; font.pixelSize: 28; }
+                ButtonRow {
+                    checkedButton: settings.showDebug? b32:  b31
+                    Button { id: b31; text: "Off"; onClicked: settings.showDebug = false; }
+                    Button { id: b32; text: "On"; onClicked: settings.showDebug = true; }
+                }
+            }
+
+            Item {}
         }
     }
 }

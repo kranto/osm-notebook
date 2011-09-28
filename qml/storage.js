@@ -5,6 +5,7 @@
 initialize();
 var currentTrack = 0;
 
+console.debug = function() {}
 
 function getDatabase() {
     return openDatabaseSync("osm-notebook", "1.0", "StorageDatabase", 100000);
@@ -12,7 +13,7 @@ function getDatabase() {
 
 // At the start of the application, we can initialize the tables we need if they haven't been created yet
 function initialize() {
-    console.log("initialize db");
+    console.debug("initialize db");
     var db = getDatabase();
     db.transaction(
         function(tx) {
@@ -29,12 +30,11 @@ function initialize() {
 function setSetting(setting, value) {
    // setting: string representing the setting name (eg: “username”)
    // value: string representing the value of the setting (eg: “myUsername”)
-    console.log("set setting " + setting + ": " + value);
+    console.debug("set setting " + setting + ": " + value);
    var db = getDatabase();
    var res = "";
    db.transaction(function(tx) {
         var rs = tx.executeSql('INSERT OR REPLACE INTO settings VALUES (?,?);', [setting,value]);
-              //console.log(rs.rowsAffected)
               if (rs.rowsAffected > 0) {
                 res = "OK";
               } else {
@@ -58,12 +58,12 @@ function getSetting(setting, defaultValue) {
             res = defaultValue;
         }
     })
-    console.log("getSetting: " + setting + " " + defaultValue + " " + res);
+    console.debug("getSetting: " + setting + " " + defaultValue + " " + res);
     return res;
 }
 
 function setState(key, value) {
-    console.log("set state " + key + ": " + value);
+    console.debug("set state " + key + ": " + value);
    var db = getDatabase();
    var res = false;
    db.transaction(function(tx) {
@@ -85,7 +85,7 @@ function getState(key, defaultValue) {
                        else
                            res = defaultValue;
                    });
-    console.log("getState: " + key + " " + defaultValue + " " + res);
+    console.debug("getState: " + key + " " + defaultValue + " " + res);
     return res;
 }
 
@@ -93,7 +93,7 @@ function storeTrackPoint(position) {
     var res = false;
     var db = getDatabase();
     db.transaction(function(tx) {
-//        console.log(position.coordinate.latitude + " " + position.timestamp);
+//        console.debug(position.coordinate.latitude + " " + position.timestamp);
         var rs = tx.executeSql('INSERT INTO trackpoints VALUES (?,?,?,?,?);',
                                [currentTrack,
                                 position.coordinate.latitude,
@@ -149,7 +149,7 @@ function getTrackPoints(trackId) {
 function newTrack() {
     var db = getDatabase();
     var trackId = new Date().getTime();
-//    console.log("trackId: " + trackId);
+//    console.debug("trackId: " + trackId);
     db.transaction(function(tx) {
                var rs = tx.executeSql('INSERT INTO tracks VALUES (?,?,?,?,?,?);',
                                       [trackId, new Date().getTime(), "", "", -1, -1]);
