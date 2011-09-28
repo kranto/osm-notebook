@@ -352,7 +352,8 @@ Page {
     Button {
         id: lockButton
         text: pos.isLatestOnMap? "Follow Track": "Where am I"
-        width: 200
+        font.pixelSize: 20
+        width: 150
         anchors.top: mouseArea.bottom
         anchors.right:  parent.right
         onClicked: {
@@ -364,7 +365,7 @@ Page {
             }
             map.lockToLocation(true);
         }
-        visible: !map.lockedToLocation
+        visible: !map.lockedToLocation && tracker.latestPosition.latitudeValid
         opacity: 0.6
     }
 
@@ -383,7 +384,7 @@ Page {
         text: "Go Back"
         anchors.fill: lockButton
         onClicked: { map.setCenter(latestCenter); }
-        visible: !lockButton.visible && latestCenter != undefined && latestCenterSet
+        visible: map.lockedToLocation && latestCenter != undefined && latestCenterSet
         opacity: 0.6
     }
 
