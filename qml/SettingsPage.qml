@@ -30,6 +30,7 @@ Page {
         Column {
             anchors.top: titleLabel.bottom
             anchors.topMargin: 30
+            width: parent.width
 
             id: settingsColumn
             spacing: 30
@@ -51,6 +52,23 @@ Page {
                     Button { id: b21; text: "Off"; onClicked: settings.gpsOnInStartup = 0; }
                     Button { id: b22; text: "On"; onClicked: settings.gpsOnInStartup = 1; }
                     Button { id: b23; text: "Previous"; onClicked: settings.gpsOnInStartup = 2; }
+                }
+            }
+            Column {
+                width: parent.width
+                spacing: 5
+                Row {
+                    spacing: 10
+                    Label { id: zoomFactorLabel; text: "Zoom Factor"; font.pixelSize: 28; }
+                    Label { anchors.baseline: zoomFactorLabel.baseline; text: Math.round(settings.zoomFactor * 100) + " %"; font.pixelSize: 20; }
+                }
+                Slider {
+                    width: parent.width;
+                    minimumValue: 1; maximumValue: 2.5; value: settings.zoomFactor;
+                    stepSize: 0.1
+                    valueIndicatorVisible: true;
+                    valueIndicatorText: Math.round(100 * value) + " %"
+                    onPressedChanged: if (!pressed) settings.zoomFactor = Math.round(value*100)/100;
                 }
             }
         }

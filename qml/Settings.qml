@@ -9,4 +9,7 @@ QtObject {
 
     property int gpsOnInStartup: Storage.getSetting("gpsOnInStartup", 2)
     onGpsOnInStartupChanged: Storage.setSetting("gpsOnInStartup", gpsOnInStartup);
+
+    property real zoomFactor: Storage.getSetting("zoomFactor", 1)
+    onZoomFactorChanged: Storage.setSetting("zoomFactor", zoomFactor);
 }

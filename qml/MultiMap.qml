@@ -11,6 +11,12 @@ Item {
     property Coordinate center
     property real zoomLevel: 15
 
+    property real zoomFactor: settings == undefined? 1: settings.zoomFactor
+    onZoomFactorChanged: {
+        if (activeMap != undefined)
+            activeMap.scale = Math.pow(2, multiMap.zoomLevel - activeMap.zoomLevel) * zoomFactor;
+    }
+
     signal viewportChanges
 
     function toCoordinate(p) {
@@ -36,8 +42,7 @@ Item {
 
     onZoomLevelChanged: {
         activeMap.zoomLevel = Math.min(activeMap.maximumZoomLevel, Math.floor(multiMap.zoomLevel));
-        activeMap.scale = Math.pow(2, multiMap.zoomLevel - activeMap.zoomLevel);
-        activeMap.transformOrigin = Item.Bottom;
+        activeMap.scale = Math.pow(2, multiMap.zoomLevel - activeMap.zoomLevel) * zoomFactor;
         activeMap.transformOrigin = Item.Center;
         viewportChanges();
     }
@@ -57,7 +62,7 @@ Item {
         activeMap.size.height = activeMap.size.height
         activeMap.center = multiMap.center
         activeMap.zoomLevel = Math.min(activeMap.maximumZoomLevel, Math.floor(multiMap.zoomLevel));
-        activeMap.scale = Math.pow(2, multiMap.zoomLevel - activeMap.zoomLevel);
+        activeMap.scale = Math.pow(2, multiMap.zoomLevel - activeMap.zoomLevel) * zoomFactor;
         activeMap.transformOrigin = Item.Bottom;
         activeMap.transformOrigin = Item.Center;
 
