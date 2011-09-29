@@ -1,5 +1,6 @@
 import QtQuick 1.1
-import com.meego 1.0
+import com.nokia.meego 1.0
+import com.nokia.extras 1.0
 import QtMobility.location 1.2
 import "storage.js" as Storage
 
@@ -8,6 +9,7 @@ Item {
 
     signal trackFinished
     signal newTrackPosition(variant position)
+    property string latestMessage
 
     property bool gpsOn: false
     property alias latestPosition: positionSource.position;
@@ -54,19 +56,22 @@ Item {
         Storage.newTrack();
         positionSource.prevCoordinate = undefined
         state = "running";
+	latestMessage = "Tracker started";
     }
 
     function pause() {
         state = "paused";
+	latestMessage = "Tracker paused";
     }
 
     function resume() {
         state = "running";
+	latestMessage = "Tracker resumed";
     }
 
     function finish() {
         tracker.state = "";
-        trackNameDialog.clearAndOpen();
+	trackNameDialog.clearAndOpen();
     }
 
     TextEntryDialog {

@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import com.meego 1.0
+import com.nokia.extras 1.0
 import QtMobility.location 1.2
 import "storage.js" as Storage
 
@@ -122,6 +123,17 @@ Page {
         jumpToAnimation.restart();
     }
 
+    InfoBanner{
+	id: trackerStateChangeBanner
+	text: tracker.latestMessage
+	iconSource: "" // TODO: find record and pause icons here
+	timerEnabled: true
+	timerShowTime: 3000
+	topMargin: 10
+	leftMargin: 10
+	z: 1000
+    }
+
     Tracker {
         id: tracker
         onTrackFinished: appWindow.refreshTracks()
@@ -133,6 +145,7 @@ Page {
         onNewTrackPosition: {
             currentTrackPolyline.addCoordinate(position.coordinate);
         }
+	onLatestMessageChanged: trackerStateChangeBanner.show();
     }
 
     Item {
@@ -309,8 +322,8 @@ Page {
     Item {
         id: mapSwitcher
         anchors.right: map.right
-        anchors.bottom: actionMenuIcon.top
-        anchors.bottomMargin: 20
+	anchors.top: lockButton.bottom
+	anchors.topMargin: 20
         width: 80
         height: switcherColumn.height
 

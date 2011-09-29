@@ -13,7 +13,7 @@ function getDatabase() {
 
 // At the start of the application, we can initialize the tables we need if they haven't been created yet
 function initialize() {
-    console.debug("initialize db");
+//    console.debug("initialize db");
     var db = getDatabase();
     db.transaction(
         function(tx) {
