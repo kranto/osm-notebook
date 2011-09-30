@@ -13,11 +13,19 @@ Item {
 
     property bool gpsOn: false
     property alias latestPosition: positionSource.position;
+    property int positionAge: 0
 
     Component.onCompleted: {
-        gpsOn = settings == undefined? false:
+	gpsOn = settings == undefined? true:
                 settings.gpsOnInStartup == 2? Storage.getState("gpsOn", true):
                 settings.gpsOnInStartup == 1;
+    }
+
+    Timer {
+	id: ageTimer
+	interval: 5000
+	repeat: true
+	onTriggered: tracker.positionAge += 5;
     }
 
     PositionSource {
@@ -29,6 +37,8 @@ Item {
         property variant prevCoordinate
 
         onPositionChanged: {
+	    ageTimer.restart();
+	    tracker.positionAge = 0;
             if (tracker.state == "running") {
                 if (position != undefined && position.latitudeValid && position.longitudeValid) {
                     if (skipFirst > 0)

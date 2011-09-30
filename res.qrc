@@ -9,5 +9,6 @@
         <file>qml/Tracker.qml</file>
         <file>qml/TextEntryDialog.qml</file>
         <file>qml/Settings.qml</file>
+        <file>images/tracker_on.png</file>
     </qresource>
 </RCC>

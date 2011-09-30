@@ -126,7 +126,7 @@ Page {
     InfoBanner{
 	id: trackerStateChangeBanner
 	text: tracker.latestMessage
-	iconSource: "" // TODO: find record and pause icons here
+	iconSource: ":/images/tracker_on.png"
 	timerEnabled: true
 	timerShowTime: 3000
 	topMargin: 10
@@ -246,14 +246,15 @@ Page {
             MapPolyline {
                 id: currentTrackPolyline
                 border.color: "red"
-                border.width: 3
+		border.width: 3
                 z: 0
             },
 
             MapCircle {
                 id: myPosition
-                border.color: "blue"
-                border.width: 3
+		border.color: tracker.positionAge < 5? "#a0108010": "#a0a0a000"
+		border.width: 3
+		color: tracker.positionAge < 5? "#3010ff10": "#30ffff00"
                 center:  Coordinate { latitude: 61.5; longitude: 23.7 }
                 z: 10
             }
@@ -421,6 +422,14 @@ Page {
         onClicked: { map.setCenter(latestCenter); }
         visible: map.lockedToLocation && latestCenter != undefined && latestCenterSet
         opacity: 0.6
+    }
+
+    Image {
+	id: name
+	source: ":/images/tracker_on.png"
+	anchors.top: parent.top
+	anchors.left: parent.left
+	visible: tracker.state == "running"
     }
 
     ParallelAnimation {
