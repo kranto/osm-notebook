@@ -50,14 +50,14 @@ function getSetting(setting, defaultValue) {
     defaultValue = typeof(defaultValue) != 'undefined' ? defaultValue : 'unknown';
     var db = getDatabase();
     var res="";
-    db.transaction(function(tx) {
+    db.readTransaction(function(tx) {
         var rs = tx.executeSql('SELECT value FROM settings WHERE setting=?;', [setting]);
         if (rs.rows.length > 0) {
             res = rs.rows.item(0).value;
         } else {
             res = defaultValue;
         }
-    })
+    });
     console.debug("getSetting: " + setting + " " + defaultValue + " " + res);
     return res;
 }
@@ -78,7 +78,7 @@ function getState(key, defaultValue) {
     defaultValue = typeof(defaultValue) != 'undefined' ? defaultValue : 'unknown';
     var db = getDatabase();
     var res = "";
-    db.transaction(function(tx) {
+    db.readTransaction(function(tx) {
                        var rs = tx.executeSql('SELECT value FROM state WHERE key=?;', [key]);
                        if (rs.rows.length > 0)
                            res = rs.rows.item(0).value;
@@ -123,7 +123,7 @@ function printTrackPoints(trackId) {
 function getTrackInfo(trackId) {
     var db = getDatabase();
     var track = new Object();
-    db.transaction(function(tx) {
+    db.readTransaction(function(tx) {
                        var rs = tx.executeSql('SELECT * FROM tracks WHERE id=?;', [trackId]);
                        if (rs.rows.length > 0) {
                            track = rs.rows.item(0);
@@ -135,7 +135,7 @@ function getTrackInfo(trackId) {
 function getTrackPoints(trackId) {
     var db = getDatabase();
     var track = new Array();
-    db.transaction(function(tx) {
+    db.readTransaction(function(tx) {
                        var rs = tx.executeSql('SELECT * FROM trackpoints WHERE trackid=? ORDER BY time ASC', [trackId]);
                        track = new Array(rs.rows.length);
                        for (var i  = 0; i < rs.rows.length; i++) {
@@ -176,7 +176,7 @@ function finalizeCurrentTrack(name) {
 function getTracks() {
     var db = getDatabase();
     var tracks = new Array();
-    db.transaction(function(tx) {
+    db.readTransaction(function(tx) {
                        var rs = tx.executeSql('SELECT * FROM tracks WHERE duration >= 0 ORDER BY date DESC;');
                        tracks = new Array(rs.rows.length);
                        for (var i = 0; i < rs.rows.length; i++) {
