@@ -7,7 +7,7 @@ PageStackWindow {
     id: appWindow
 
     initialPage: mainPage
-    showStatusBar: false
+    showStatusBar: !settings.fullScreen
 
     Component.onCompleted: {
         refreshTracks();

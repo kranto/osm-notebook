@@ -4,6 +4,9 @@ import "storage.js" as Storage
 
 QtObject {
 
+    property bool fullScreen: Storage.getSetting("fullScreen", false)
+    onFullScreenChanged: Storage.setSetting("fullScreen", fullScreen);
+
     property int orientationLock: Storage.getSetting("orientationLock", PageOrientation.Automatic)
     onOrientationLockChanged: Storage.setSetting("orientationLock", orientationLock);
 

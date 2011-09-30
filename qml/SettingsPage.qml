@@ -31,7 +31,17 @@ Page {
                 id: titleLabel; text: "Settings"; font.pixelSize: 32; font.bold: true;
             }
 
-            Column {                
+            Column {
+                spacing: 5
+                Label { text: "Full Screen"; font.pixelSize: 28; }
+                ButtonRow {
+                    checkedButton: settings.fullScreen? b02:  b01
+                    Button { id: b01; text: "Off"; onClicked: settings.fullScreen = false; }
+                    Button { id: b02; text: "On"; onClicked: settings.fullScreen = true; }
+                }
+            }
+
+            Column {
                 spacing: 5
                 Label { text: "Orientation Lock"; font.pixelSize: 28; }
                 ButtonRow {
@@ -69,6 +79,7 @@ Page {
                     onPressedChanged: if (!pressed) settings.zoomFactor = Math.round(value*100)/100;
                 }
             }
+
             Column {
                 spacing: 5
                 Label { text: "Show Debug Values"; font.pixelSize: 28; }

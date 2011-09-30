@@ -13,7 +13,17 @@ Page {
 
     signal settingsRequested
 
+    Component {
+        id: mapPolylineComponent;
+        MapPolyline {
+            border.color: "red"
+            border.width: 3
+            z: 1
+        }
+    }
+
     property variant trackPolylines: []
+    property variant currentTrackPolyline: mapPolylineComponent.createObject(mainPage)
 
     function showTracks(trackIds) {
         var polylines = trackPolylines;
@@ -28,10 +38,10 @@ Page {
                 if (polylines[i].polyline == undefined) {
                     polylines[i].polyline = loadTrackPolyline(polylines[i].id);
                 }
-                map.activeMap.addMapObject(polylines[i].polyline);
+                map.addMapObject(polylines[i].polyline);
             } else {
                 if (polylines[i].polyline != undefined)
-                    map.activeMap.removeMapObject(polylines[i].polyline);
+                    map.removeMapObject(polylines[i].polyline);
             }
         }
         trackPolylines = polylines;
@@ -52,7 +62,7 @@ Page {
         trackPolylines = polylines;
     }
 
-    Component { id: polylineComponent; MapPolyline { border.width: 3; border.color: "magenta"; } }
+    Component { id: polylineComponent; MapPolyline { border.width: 3; border.color: "magenta"; z: 0} }
     Component { id: coordinateComponent; Coordinate { } }
 
     function loadTrackPolyline(trackId) {
@@ -125,7 +135,7 @@ Page {
 
     InfoBanner{
 	id: trackerStateChangeBanner
-	text: tracker.latestMessage
+        text: tracker.latestMessage
 	iconSource: ":/images/tracker_on.png"
 	timerEnabled: true
 	timerShowTime: 3000
@@ -147,7 +157,13 @@ Page {
         }
         onLatestMessageChanged: if (state != "") trackerStateChangeBanner.show();
         property string prevState: ""
-        onTrackStarted: currentTrackPolyline.path:  ""
+        onTrackStarted: {
+            console.log("track started");
+
+            map.removeMapObject(currentTrackPolyline);
+            currentTrackPolyline = mapPolylineComponent.createObject(mainPage);
+            map.addMapObject(currentTrackPolyline);
+        }
     }
 
     Item {
@@ -245,13 +261,6 @@ Page {
         ]
 
         mapObjects: [
-            MapPolyline {
-                id: currentTrackPolyline
-                border.color: "red"
-		border.width: 3
-                z: 0
-            },
-
             MapCircle {
                 id: myPosition
 		border.color: tracker.positionAge < 5? "#a0108010": "#a0a0a000"

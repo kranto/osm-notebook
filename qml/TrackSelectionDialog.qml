@@ -32,7 +32,7 @@ MultiSelectionDialog {
         model.clear();
         model.append({"name": ""});
         var selected = new Array();
-        for (var i in l) {
+        for (var i = 0; i < l.length; i++) {
             model.insert(i, {"name": trackName(l[i])});
             if (l[i].selected)
                 selected.push(i);

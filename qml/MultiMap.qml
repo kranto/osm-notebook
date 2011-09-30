@@ -34,6 +34,26 @@ Item {
         return Qt.point(x, y);
     }
 
+    function addMapObject(o) {
+        var newList = new Array(mapObjects.length + 1);
+        for (var i = 0; i < mapObjects.length; i++) {
+            newList[i] = mapObjects[i];
+        }
+        newList[mapObjects.length] = o
+        mapObjects = newList;
+        activeMap.addMapObject(o);
+    }
+
+    function removeMapObject(o) {
+        var newList = new Array();
+        for (var i = 0; i < mapObjects.length; i++) {
+            if (o != mapObjects[i])
+                newList.push(mapObjects[i]);
+        }
+        activeMap.removeMapObject(o);
+        mapObjects = newList;
+    }
+
     onCenterChanged: {
         if (activeMap)
             activeMap.center = center;
@@ -66,8 +86,8 @@ Item {
         activeMap.transformOrigin = Item.Bottom;
         activeMap.transformOrigin = Item.Center;
 
-        for (var i = 0;  i < maps.length; i++) {
-            for (var j = 0; j < mapObjects.length; j++) {
+        for (var i=0; i < maps.length; i++) {
+            for (var j=0; j < mapObjects.length; j++) {
                 maps[i].removeMapObject(mapObjects[j]);
             }
             if (maps[i] != activeMap)
