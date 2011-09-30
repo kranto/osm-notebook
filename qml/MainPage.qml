@@ -145,7 +145,9 @@ Page {
         onNewTrackPosition: {
             currentTrackPolyline.addCoordinate(position.coordinate);
         }
-	onLatestMessageChanged: trackerStateChangeBanner.show();
+        onLatestMessageChanged: if (state != "") trackerStateChangeBanner.show();
+        property string prevState: ""
+        onTrackStarted: currentTrackPolyline.path:  ""
     }
 
     Item {

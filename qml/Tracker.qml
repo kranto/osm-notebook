@@ -7,6 +7,7 @@ import "storage.js" as Storage
 Item {
     id: tracker
 
+    signal trackStarted
     signal trackFinished
     signal newTrackPosition(variant position)
     property string latestMessage
@@ -67,6 +68,7 @@ Item {
         positionSource.prevCoordinate = undefined
         state = "running";
 	latestMessage = "Tracker started";
+        trackStarted();
     }
 
     function pause() {
@@ -81,6 +83,8 @@ Item {
 
     function finish() {
         tracker.state = "";
+        latestMessage ="Tracker stopped";
+        trackFinished();
 	trackNameDialog.clearAndOpen();
     }
 
