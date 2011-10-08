@@ -6,20 +6,46 @@ import "storage.js" as Storage
 PageStackWindow {
     id: appWindow
 
-    initialPage: mainPage
+    initialPage: loaderPage
     showStatusBar: !settings.fullScreen
+    property variant mainPage
 
-    Component.onCompleted: {
-        refreshTracks();
+    Page {
+        id: loaderPage
+        anchors.fill: parent
+
+        Image {
+            id: loaderImage
+            anchors.centerIn: parent
+            source: "file:/usr/share/icons/hicolor/80x80/apps/osm-notebook.png"
+            width: 160
+            height: 160
+        }
+        onStatusChanged: {
+            if (status == PageStatus.Active)
+                timer.start();
+        }
+
+        Timer {
+            id: timer
+            interval: 1000
+            onTriggered: {
+                appWindow.pageStack.push(mainPageComponent);
+                mainPage = appWindow.pageStack.currentPage;
+                refreshTracks();
+            }
+        }
     }
 
     property Settings settings: Settings { }
-//    Component { id: settingsComponent; Settings { } }
     Component { id: settingsPageComponent; SettingsPage { } }
 
-    MainPage { id: mainPage; onSettingsRequested: { pageStack.push(settingsPageComponent); } }
+    Component { id: mainPageComponent
+        MainPage { onSettingsRequested: { pageStack.push(settingsPageComponent); } }
+    }
 
     function refreshTracks() {
-        mainPage.loadTracks();
+        if (mainPage != undefined)
+            mainPage.loadTracks();
     }
 }
