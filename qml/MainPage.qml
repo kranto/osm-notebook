@@ -338,6 +338,7 @@ Page {
 	anchors.topMargin: 20
         width: 80
         height: switcherColumn.height
+        visible: settings.showMapSwitcher
 
         property int selectedIndex: 0
 

@@ -82,6 +82,16 @@ Page {
 
             Column {
                 spacing: 5
+                Label { text: "Show Map Switcher"; font.pixelSize: 28; }
+                ButtonRow {
+                    checkedButton: settings.showMapSwitcher? b42:  b41
+                    Button { id: b41; text: "Off"; onClicked: settings.showMapSwitcher = false; }
+                    Button { id: b42; text: "On"; onClicked: settings.showMapSwitcher = true; }
+                }
+            }
+
+            Column {
+                spacing: 5
                 Label { text: "Show Debug Values"; font.pixelSize: 28; }
                 ButtonRow {
                     checkedButton: settings.showDebug? b32:  b31
