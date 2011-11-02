@@ -1,5 +1,5 @@
 import QtQuick 1.1
-import com.meego 1.0
+import com.nokia.meego 1.0
 import com.nokia.extras 1.0
 import QtMobility.location 1.2
 import "storage.js" as Storage
@@ -304,8 +304,8 @@ Page {
                 var dx = mouse.x - x0;
                 var dy = mouse.y - y0;
 
-		if (firstChange && Math.abs(dx) + Math.abs(dy) > 300) // more than N pixels as first touch -> interpret as multitouch
-                    return;
+//		if (firstChange && Math.abs(dx) + Math.abs(dy) > 300) // more than N pixels as first touch -> interpret as multitouch
+//                    return;
                 firstChange = false;
                 if (map.lockedToLocation) {
                     if (Math.abs(dx) + Math.abs(dy) < 40) // N pixels needed to unlock
